@@ -489,6 +489,7 @@ GameObject:
   - component: {fileID: 621289482296197741}
   - component: {fileID: 2576872174410402093}
   - component: {fileID: 694717119578126905}
+  - component: {fileID: 7951838264671300704}
   - component: {fileID: 3439822706324593469}
   - component: {fileID: 7839670049997709837}
   - component: {fileID: 879159340752458059}
@@ -584,6 +585,7 @@ MonoBehaviour:
   SprintSpeed: 5.335
   RotationSmoothTime: 0.12
   SpeedChangeRate: 10
+  Sensitivity: 1.6
   LandingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
   FootstepAudioClips:
   - {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
@@ -612,6 +614,21 @@ MonoBehaviour:
   BottomClamp: -30
   CameraAngleOverride: 0
   LockCameraPosition: 0
+--- !u!114 &7951838264671300704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2082366486394694202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53fda1eb5c75a674eb5aee793888ef5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThirdPersonShooterController
+  playerCameraRoot: {fileID: 7196445478956752324}
+  normalSensitivity: 1.6
+  aimSensitivity: 0.8
 --- !u!114 &3439822706324593469
 MonoBehaviour:
   m_ObjectHideFlags: 0

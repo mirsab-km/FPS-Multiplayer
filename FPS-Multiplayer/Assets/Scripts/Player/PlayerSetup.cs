@@ -3,6 +3,7 @@ using Photon.Pun;
 using Cinemachine;
 using StarterAssets;
 using TMPro;
+using System.Linq;
 
 public class PlayerSetup : MonoBehaviourPunCallbacks
 {
@@ -14,19 +15,48 @@ public class PlayerSetup : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
-            // Assign camera follow to the local player only
-            CinemachineVirtualCamera cam = FindFirstObjectByType<CinemachineVirtualCamera>();
-            cam.Follow = playerCameraRoot;
+            SetupFollowCamera();
 
             // Enable movement only for the local player
-            movementScript.enabled = true;
+            if (movementScript != null)
+            {
+                movementScript.enabled = true;
+            }
+            else
+            {
+                Debug.LogError("Movement script reference missing on player prefab!");
+            }
         }
         else
         {
             // Disable movement for remote players
-            movementScript.enabled = false;
+            if (movementScript != null)
+            {
+                movementScript.enabled = false;
+            }
         }
 
-        playerNameText.text = photonView.Owner.NickName;
+        if (playerNameText != null)
+        {
+            playerNameText.gameObject.SetActive(!photonView.IsMine);
+            playerNameText.text = photonView.Owner.NickName;
+        }
+    }
+
+    private void SetupFollowCamera()
+    {
+        CinemachineVirtualCamera[] allCams = FindObjectsByType<CinemachineVirtualCamera>(FindObjectsSortMode.None);
+
+        CinemachineVirtualCamera followCam = allCams.FirstOrDefault(cam => cam.gameObject.name == "PlayerFollowCamera");
+
+        if (followCam != null && playerCameraRoot != null)
+        {
+            followCam.Follow = playerCameraRoot;
+        }
+        else
+        {
+            // Log an error if either the camera or the root is missing
+            Debug.LogError("Error setting up camera: Either 'PlayerFollowCamera' not found or 'playerCameraRoot' reference is missing.");
+        }
     }
 }

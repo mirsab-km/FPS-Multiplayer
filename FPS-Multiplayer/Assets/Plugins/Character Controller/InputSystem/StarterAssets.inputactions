@@ -239,6 +239,17 @@
                     "action": "Aim",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47b6acc9-b1f1-452a-8a0f-6f3bf7a592b1",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "Aim",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
