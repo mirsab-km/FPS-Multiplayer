@@ -3,6 +3,7 @@ using Cinemachine;
 using StarterAssets;
 using System.Linq;
 using Photon.Pun;
+using UnityEngine.InputSystem;
 
 public class ThirdPersonShooterController : MonoBehaviourPunCallbacks
 {
@@ -12,6 +13,9 @@ public class ThirdPersonShooterController : MonoBehaviourPunCallbacks
     [SerializeField] private float normalSensitivity = 1f;
     [SerializeField] private float aimSensitivity = 0.5f;
     private ThirdPersonController thirdPersonControllerScript;
+    [SerializeField] private float raycastDistance = 999f;
+    [SerializeField] private LayerMask aimColliderMask = new LayerMask();
+    [SerializeField] private Transform debugTransform;
     private void Awake()
     {
         starterAssetsInputs = GetComponent<StarterAssetsInputs>();
@@ -29,15 +33,31 @@ public class ThirdPersonShooterController : MonoBehaviourPunCallbacks
         if (!photonView.IsMine) return;
         if (playerAimCamera == null) return;
 
+        Vector2 screenCenterPoint = new Vector2(Screen.width / 2, Screen.height / 2);
+
+        Ray ray = Camera.main.ScreenPointToRay(screenCenterPoint); //starts from camera and pass through screen center
+        if (Physics.Raycast(ray, out RaycastHit raycastHit, raycastDistance, aimColliderMask)) 
+        {
+            debugTransform.position = raycastHit.point;
+        }
+
         if (starterAssetsInputs.aim)
         {
             playerAimCamera.gameObject.SetActive(true);
             thirdPersonControllerScript.SetSensitivity(aimSensitivity);
+            thirdPersonControllerScript.SetRotateOnMove(false);
+
+            Vector3 worldAimTarget = raycastHit.point;
+            worldAimTarget.y = transform.position.y;
+            Vector3 aimDirection = (worldAimTarget - transform.position).normalized;
+
+            transform.forward = Vector3.Lerp(transform.forward, aimDirection, Time.deltaTime * 20f);
         }
         else
         {
             playerAimCamera.gameObject.SetActive(false);
             thirdPersonControllerScript.SetSensitivity(normalSensitivity);
+            thirdPersonControllerScript.SetRotateOnMove(true);
         }
     }
 
