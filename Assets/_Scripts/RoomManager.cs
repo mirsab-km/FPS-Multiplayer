@@ -9,14 +9,20 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     [Space]
     [SerializeField] private GameObject roomCamera;
+    private string currentName;
     void Start()
     {
-        ConnectToServer();
+        
     }
 
     void Update()
     {
         
+    }
+
+    public void SetName(string _name)
+    {
+        currentName = _name;
     }
 
     public void ConnectToServer()
@@ -44,6 +50,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         PhotonNetwork.Instantiate(player.name, spawnPoint.position, spawnPoint.rotation);
         roomCamera.SetActive(false);
+        PhotonNetwork.LocalPlayer.NickName = currentName;
     }
 
 }
