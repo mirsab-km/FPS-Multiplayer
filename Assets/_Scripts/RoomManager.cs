@@ -3,6 +3,7 @@ using Photon.Realtime;
 using UnityEngine;
 public class RoomManager : MonoBehaviourPunCallbacks
 {
+    public static RoomManager Instance { get; private set; }
     [SerializeField] private string roomCode = "Map1";
     [SerializeField] private GameObject player;
     [SerializeField] private Transform spawnPoint;
@@ -10,6 +11,18 @@ public class RoomManager : MonoBehaviourPunCallbacks
     [Space]
     [SerializeField] private GameObject roomCamera;
     private string currentName;
+
+    private void Awake()
+    {
+        if (Instance == null && Instance != this)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     void Start()
     {
         
@@ -53,4 +66,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
         PhotonNetwork.LocalPlayer.NickName = currentName;
     }
 
+    public void RespawnPlayer()
+    {
+        PhotonNetwork.Instantiate(player.name, spawnPoint.position, spawnPoint.rotation);
+    }
 }
