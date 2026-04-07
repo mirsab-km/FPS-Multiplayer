@@ -9,11 +9,21 @@ public class Weapon : MonoBehaviour
     public float fireRate = 10f;
     public int damagePerShot = 25;
     public float rayCastDistance = 500f;
+    [Space]
+    public float spread = 0.05f;
+    public int pellectsCount = 1;
 
     [Header("Animation Setup")]
     public Animation anim;
     public AnimationClip shootClip;
     public AnimationClip reloadClip;
+    public AnimationClip startClip;
+
+    [Header("Scoping Settings")]
+    public ScopeManager scopeManagerScript;
+    public bool isScopedWeapon = false;
+    public SkinnedMeshRenderer[] meshRenderers;
+    public float spreadWhileScoped;
 
     [Header("Hitmarker and Kills Manager")]
     public PlayerHitAndKillManager playerHitAndKillManagerScript;
@@ -42,9 +52,15 @@ public class Weapon : MonoBehaviour
     public Transform cameraTranform;
 
     private float timeUntilAllowNextShot;
+    private bool isScoped = false;
     void Start()
     {
         UpdateAmmoUI();
+        SetScopeState(false);
+
+        anim.clip = startClip;
+        anim.Stop();
+        anim.Play();
     }
 
     void Update()
@@ -61,8 +77,20 @@ public class Weapon : MonoBehaviour
         {
             Reload();
         }
+
+        SetScopeState(isScopedWeapon && Input.GetButton("Fire2"));
     }
 
+    private void SetScopeState(bool _isScoped)
+    {
+        scopeManagerScript.SetScopeState(_isScoped);
+        isScoped = _isScoped;
+
+        foreach (var _renderer in meshRenderers)
+        {
+            _renderer.enabled = !_isScoped;
+        }
+    }
     private void Reload()
     {
         anim.clip = reloadClip;
@@ -99,32 +127,46 @@ public class Weapon : MonoBehaviour
         spawnedMuzzleFlash.transform.parent = muzzleFlashSpawnPoint;
         Destroy(spawnedMuzzleFlash, 0.08f);
 
-        Ray ray = new Ray(cameraTranform.position, cameraTranform.forward);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit, rayCastDistance))
+        for (int i = 0; i < pellectsCount; i++)
         {
-            Quaternion rotation = Quaternion.LookRotation(hit.normal);
+            //Spread Create
+            float _spreadToUse = isScoped ? spreadWhileScoped : spread;
 
-            if (hit.transform.CompareTag("Player"))
+            Vector3 forwardDirection = cameraTranform.forward;
+
+            Vector3 randomSpread = cameraTranform.right * Random.Range(-_spreadToUse, _spreadToUse) + 
+                                   cameraTranform.up * Random.Range(-_spreadToUse, _spreadToUse);
+
+            Vector3 finalDirection = forwardDirection + randomSpread;
+            finalDirection.Normalize();
+
+            Ray ray = new Ray(cameraTranform.position, finalDirection);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, rayCastDistance))
             {
-                hit.transform.GetComponent<PhotonView>().RPC("RPC_TakeDamage", RpcTarget.AllBuffered, damagePerShot);
-                PhotonNetwork.Instantiate(bloodHitParicle.name, hit.point, rotation);
+                Quaternion rotation = Quaternion.LookRotation(hit.normal);
 
-                if (hit.transform.GetComponent<PlayerHealth>().health <= 0f)
+                if (hit.transform.CompareTag("Player"))
                 {
-                    //Kill
-                    playerHitAndKillManagerScript.GetKill();
+                    hit.transform.GetComponent<PhotonView>().RPC("RPC_TakeDamage", RpcTarget.AllBuffered, damagePerShot);
+                    PhotonNetwork.Instantiate(bloodHitParicle.name, hit.point, rotation);
+
+                    if (hit.transform.GetComponent<PlayerHealth>().health <= 0f)
+                    {
+                        //Kill
+                        playerHitAndKillManagerScript.GetKill();
+                    }
+                    else
+                    {
+                        //Damage
+                        playerHitAndKillManagerScript.GetHit();
+                    }
+
                 }
                 else
                 {
-                    //Damage
-                    playerHitAndKillManagerScript.GetHit();
+                    PhotonNetwork.Instantiate(concreteHitParicle.name, hit.point, rotation);
                 }
-
-            }
-            else
-            {
-                PhotonNetwork.Instantiate(concreteHitParicle.name, hit.point, rotation);
             }
         }
     }
