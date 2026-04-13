@@ -1,3 +1,5 @@
+using Photon.Pun;
+using Photon.Pun.UtilityScripts;
 using UnityEngine;
 
 public class PlayerHitAndKillManager : MonoBehaviour
@@ -9,7 +11,7 @@ public class PlayerHitAndKillManager : MonoBehaviour
     public Animation killmarkerAnimation;
     public AudioSource killmarkerAudioSource;
 
-    public void GetHit()
+    public void GetHit(int _damage)
     {
         hitmarkerAnimation.Stop();
         hitmarkerAnimation.Play();
@@ -25,5 +27,8 @@ public class PlayerHitAndKillManager : MonoBehaviour
 
         killmarkerAudioSource.Stop();
         killmarkerAudioSource.Play();
+
+        PhotonNetwork.LocalPlayer.AddScore(25);
+        LocalPlayerKDManager.Instance.GetKill();
     }
 }

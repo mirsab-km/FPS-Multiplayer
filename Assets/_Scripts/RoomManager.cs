@@ -6,7 +6,7 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public static RoomManager Instance { get; private set; }
     [SerializeField] private string roomCode = "Map1";
     [SerializeField] private GameObject player;
-    [SerializeField] private Transform spawnPoint;
+    [SerializeField] private Transform[] spawnPoints;
 
     [Space]
     [SerializeField] private GameObject roomCamera;
@@ -38,6 +38,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
         currentName = _name;
     }
 
+    public Vector3 GetRandomSpawnPos()
+    {
+        Transform spawnPoint = spawnPoints[Random.Range(0, spawnPoints.Length)];
+        return spawnPoint.position;
+    }
+
     public void ConnectToServer()
     {
         Debug.Log("Connecting...");
@@ -61,13 +67,13 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Joined room. Spawning Player");
 
-        PhotonNetwork.Instantiate(player.name, spawnPoint.position, spawnPoint.rotation);
+        PhotonNetwork.Instantiate(player.name, GetRandomSpawnPos(), Quaternion.identity);
         roomCamera.SetActive(false);
         PhotonNetwork.LocalPlayer.NickName = currentName;
     }
 
     public void RespawnPlayer()
     {
-        PhotonNetwork.Instantiate(player.name, spawnPoint.position, spawnPoint.rotation);
+        PhotonNetwork.Instantiate(player.name, GetRandomSpawnPos(), Quaternion.identity);
     }
 }
