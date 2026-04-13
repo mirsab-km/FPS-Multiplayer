@@ -36,6 +36,7 @@ public class PlayerHealth : MonoBehaviourPun
 
             if (health <= 0f)
             {
+                LocalPlayerKDManager.Instance.OnDied();
                 //Death Code
                 RoomManager.Instance.RespawnPlayer();
                 PhotonNetwork.Destroy(gameObject);

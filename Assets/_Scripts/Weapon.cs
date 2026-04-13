@@ -159,7 +159,7 @@ public class Weapon : MonoBehaviour
                     else
                     {
                         //Damage
-                        playerHitAndKillManagerScript.GetHit();
+                        playerHitAndKillManagerScript.GetHit(damagePerShot);
                     }
 
                 }
