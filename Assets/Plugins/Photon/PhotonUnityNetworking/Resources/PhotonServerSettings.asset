@@ -38,6 +38,7 @@ MonoBehaviour:
   - DestroyRpc
   - RPC_TakeDamage
   - RPC_ShootSound
+  - RPC_PlayerJump
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

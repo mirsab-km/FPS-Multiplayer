@@ -1,6 +1,7 @@
+using Photon.Pun;
 using UnityEngine;
 
-public class Movement : MonoBehaviour
+public class Movement : MonoBehaviourPun
 {
     [Header("Movement")]
     [SerializeField] private float walkSpeed = 4f;
@@ -15,19 +16,26 @@ public class Movement : MonoBehaviour
     private Rigidbody rb;
     private bool isGrounded;
     private bool isSprinting;
+    private AnimationSyncer animationSyncerScript;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        animationSyncerScript = GetComponent<AnimationSyncer>();
     }
 
     void Update()
     {
         input = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical")).normalized;
+
+        animationSyncerScript.horizontal = input.x;
+        animationSyncerScript.vertical = input.y;
+
         isSprinting = Input.GetKey(KeyCode.LeftShift);
 
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            photonView.RPC("RPC_PlayerJump", RpcTarget.Others);
         }
         else
         {

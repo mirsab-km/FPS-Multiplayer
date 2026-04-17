@@ -5,12 +5,14 @@ public class PlayerSetup : MonoBehaviourPun
 {
     [SerializeField] private GameObject fpCamera;
     [SerializeField] private Movement movementScript;
+    [SerializeField] private GameObject tpPlayer;
         [Space]
     [SerializeField] private TextMeshProUGUI nameText;
     void Start()
     {
         fpCamera.SetActive(photonView.IsMine);
         movementScript.enabled = photonView.IsMine;
+        tpPlayer.gameObject.SetActive(!photonView.IsMine);
         nameText.gameObject.SetActive(!photonView.IsMine);
 
         nameText.text = photonView.Owner.NickName;
