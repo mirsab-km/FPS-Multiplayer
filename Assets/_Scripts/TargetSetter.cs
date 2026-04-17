@@ -6,5 +6,6 @@ public class TargetSetter : MonoBehaviour
     void Update()
     {
         target.position = transform.position;
+        target.rotation = transform.rotation;
     }
 }

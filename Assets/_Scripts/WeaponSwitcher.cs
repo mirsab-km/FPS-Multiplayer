@@ -1,10 +1,15 @@
+using Photon.Pun;
 using Unity.Mathematics;
 using UnityEngine;
 
 public class WeaponSwitcher : MonoBehaviour
 {
     private int selectedWeapon;
+
+    public PhotonView tpWeaponManager;
     private float timeUntilAllowSelectNextWeapon;
+
+    private int previouslySelectedWeapon = -1;
 
     void Update()
     {
@@ -51,5 +56,11 @@ public class WeaponSwitcher : MonoBehaviour
         {
             transform.GetChild(i).gameObject.SetActive(i == selectedWeapon);
         }
+
+        if (selectedWeapon != previouslySelectedWeapon)
+        {
+            tpWeaponManager.RPC("RPC_SetTPWeapon", RpcTarget.OthersBuffered, (byte)selectedWeapon);
+        }
+        previouslySelectedWeapon = selectedWeapon;
     }
 }
