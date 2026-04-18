@@ -154,7 +154,7 @@ public class Weapon : MonoBehaviour
                     if (hit.transform.GetComponent<PlayerHealth>().health <= 0f)
                     {
                         //Kill
-                        playerHitAndKillManagerScript.GetKill();
+                        playerHitAndKillManagerScript.GetKill(hit.transform.GetComponent<PhotonView>().Owner.NickName);
                     }
                     else
                     {
