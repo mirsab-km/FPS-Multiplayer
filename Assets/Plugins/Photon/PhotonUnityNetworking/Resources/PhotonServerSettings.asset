@@ -41,6 +41,7 @@ MonoBehaviour:
   - RPC_PlayerJump
   - RPC_SetTPWeapon
   - RPC_GetKill
+  - RPC_SentChatMessage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
