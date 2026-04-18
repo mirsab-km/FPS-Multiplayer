@@ -40,11 +40,7 @@ MonoBehaviour:
   - RPC_ShootSound
   - RPC_PlayerJump
   - RPC_SetTPWeapon
-<<<<<<< Updated upstream
-=======
   - RPC_GetKill
-  - RPC_SentChatMessage
->>>>>>> Stashed changes
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
