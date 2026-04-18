@@ -20,7 +20,7 @@ public class PlayerHitAndKillManager : MonoBehaviour
         hitmarkerAudioSource.Play();
     }
 
-    public void GetKill()
+    public void GetKill(string _victimName)
     {
         killmarkerAnimation.Stop();
         killmarkerAnimation.Play();
@@ -30,5 +30,7 @@ public class PlayerHitAndKillManager : MonoBehaviour
 
         PhotonNetwork.LocalPlayer.AddScore(25);
         LocalPlayerKDManager.Instance.GetKill();
+
+        KillfeedManager.Instance.photonView.RPC("RPC_GetKill",RpcTarget.All ,PhotonNetwork.LocalPlayer.NickName, _victimName);
     }
 }
