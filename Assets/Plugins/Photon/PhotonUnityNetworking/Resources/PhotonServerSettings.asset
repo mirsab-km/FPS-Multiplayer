@@ -42,6 +42,7 @@ MonoBehaviour:
   - RPC_SetTPWeapon
   - RPC_GetKill
   - RPC_SentChatMessage
+  - RPC_EndMatch
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1
