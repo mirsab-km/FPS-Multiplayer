@@ -10,6 +10,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     [Space]
     [SerializeField] private GameObject roomCamera;
+    [SerializeField] private GameObject chatPanel;
+    [SerializeField] private GameObject timerPanel;
     private string currentName;
 
     private void Awake()
@@ -69,6 +71,8 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         PhotonNetwork.Instantiate(player.name, GetRandomSpawnPos(), Quaternion.identity);
         roomCamera.SetActive(false);
+        chatPanel.SetActive(true);
+        timerPanel.SetActive(true);
         PhotonNetwork.LocalPlayer.NickName = currentName;
     }
 
