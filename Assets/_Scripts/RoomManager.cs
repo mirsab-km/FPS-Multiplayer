@@ -4,7 +4,7 @@ using UnityEngine;
 public class RoomManager : MonoBehaviourPunCallbacks
 {
     public static RoomManager Instance { get; private set; }
-    [SerializeField] private string roomCode = "Map1";
+    public string roomCode = "Map1";
     [SerializeField] private GameObject player;
     [SerializeField] private Transform[] spawnPoints;
 
@@ -50,18 +50,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Connecting...");
         PhotonNetwork.AutomaticallySyncScene = true;
-        PhotonNetwork.ConnectUsingSettings();
-    }
-
-    public override void OnConnectedToMaster()
-    {
-        Debug.Log("Joining lobby...");
-        PhotonNetwork.JoinLobby();
-    }
-
-    public override void OnJoinedLobby()
-    {
-        Debug.Log("Joining or creating room");
         PhotonNetwork.JoinOrCreateRoom(roomCode, roomOptions: null, typedLobby: null);
     }
 
