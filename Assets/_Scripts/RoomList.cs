@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Collections;
 using TMPro;
 using System;
+using UnityEngine.SceneManagement;
 public class RoomList : MonoBehaviourPunCallbacks
 {
     public static RoomList Instance { get; private set; }
@@ -63,7 +64,7 @@ public class RoomList : MonoBehaviourPunCallbacks
         {
             foreach (var room in roomList)
             {
-                for (int i = 0; i <= cachedRoomList.Count; i++)
+                for (int i = 0; i < cachedRoomList.Count; i++)
                 {
                     if (cachedRoomList[i].Name == room.Name)
                     {
@@ -110,5 +111,10 @@ public class RoomList : MonoBehaviourPunCallbacks
         roomManagerScript.roomCode = _name;
         roomManagerGameObject.SetActive(true);
         gameObject.SetActive(false);
+    }
+
+    public void BackButton()
+    {
+        SceneManager.LoadScene(0);
     }
 }
