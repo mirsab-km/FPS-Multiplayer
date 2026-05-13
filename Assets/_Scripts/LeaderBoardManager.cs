@@ -9,15 +9,26 @@ public class LeaderBoardManager : MonoBehaviour
     [Space]
     public Transform playerItemPrefabParent;
     public GameObject playerItemPrefab;
+    private bool forceShowLeaderboard = false;
 
     void Start()
     {
         InvokeRepeating(nameof(UpdateLeaderboard), 0.5f, 0.5f);
     }
 
-    void Update()
+   void Update()
     {
-        leaderboardUI.SetActive(Input.GetKey(KeyCode.Tab));
+        leaderboardUI.SetActive(Input.GetKey(KeyCode.Tab) || forceShowLeaderboard);
+    }
+
+    public void ShowFinalLeaderboard()
+    {
+        forceShowLeaderboard = true;
+    }
+
+    public void HideLeaderboard()
+    {
+        forceShowLeaderboard = false;
     }
 
     private void UpdateLeaderboard()
@@ -32,7 +43,10 @@ public class LeaderBoardManager : MonoBehaviour
 
         foreach (var _player in sortedPlayerList)
         {
-            GameObject playerItem = Instantiate(playerItemPrefab, playerItemPrefabParent);
+            GameObject playerItem = Instantiate(playerItemPrefab, playerItemPrefabParent, false);
+            playerItem.transform.localPosition = Vector3.zero;
+            playerItem.transform.localRotation = Quaternion.identity;
+            playerItem.transform.localScale = Vector3.one;
 
             string _nickname = _player.NickName;
             

@@ -1,5 +1,9 @@
 using TMPro;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
+using Photon.Pun.UtilityScripts;
+using System.Linq;
 
 public class UIManager : MonoBehaviour
 {
@@ -10,7 +14,13 @@ public class UIManager : MonoBehaviour
 
     [Header("End Screen")]
     public GameObject endScreen;
+
     public TextMeshProUGUI winnerText;
+
+    [Header("Winner Stats")]
+    public TextMeshProUGUI killsText;
+    public TextMeshProUGUI deathsText;
+    public TextMeshProUGUI scoreText;
 
     void Awake()
     {
@@ -28,6 +38,36 @@ public class UIManager : MonoBehaviour
     public void ShowEndScreen(string winnerName)
     {
         endScreen.SetActive(true);
-        winnerText.text = "Winner: " + winnerName;
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        winnerText.text = winnerName;
+
+        FindFirstObjectByType<LeaderBoardManager>().ShowFinalLeaderboard();
+
+        UpdateWinnerStats(winnerName);
+    }
+
+    void UpdateWinnerStats(string winnerName)
+    {
+        Player winner =
+            PhotonNetwork.PlayerList
+            .FirstOrDefault(p => p.NickName == winnerName);
+
+        if (winner == null) return;
+
+        int kills = 0;
+        int deaths = 0;
+
+        if (winner.CustomProperties["Kills"] != null)
+            kills = (int)winner.CustomProperties["Kills"];
+
+        if (winner.CustomProperties["Deaths"] != null)
+            deaths = (int)winner.CustomProperties["Deaths"];
+
+        killsText.text = kills.ToString();
+        deathsText.text = deaths.ToString();
+        scoreText.text = winner.GetScore().ToString();
     }
 }

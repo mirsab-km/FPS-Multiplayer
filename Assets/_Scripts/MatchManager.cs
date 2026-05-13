@@ -10,61 +10,83 @@ public class MatchManager : MonoBehaviourPunCallbacks
     public static MatchManager Instance;
 
     [Header("Match Settings")]
-    public float matchTime = 180f; // 3 minutes
+    public float matchTime = 180f;
 
     private double startTime;
     private bool matchEnded = false;
+    private bool matchStarted = false;
 
     void Awake()
     {
         Instance = this;
     }
 
-    public override void OnJoinedRoom()
-{
-    if (PhotonNetwork.IsMasterClient)
-    {
-        Hashtable hash = new Hashtable();
-        hash["StartTime"] = PhotonNetwork.Time;
-        PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
-    }
-}
-
     void Update()
-{
-    if (matchEnded) return;
-
-    if (PhotonNetwork.CurrentRoom == null) return;
-
-    if (!PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("StartTime", out object value))
-        return;
-
-    startTime = (double)value;
-
-    float timePassed = (float)(PhotonNetwork.Time - startTime);
-    float timeLeft = matchTime - timePassed;
-
-    if (timeLeft <= 0f)
     {
-        timeLeft = 0f;
+        if (matchEnded) return;
 
-        if (PhotonNetwork.IsMasterClient && !matchEnded)
+        if (PhotonNetwork.CurrentRoom == null) return;
+
+        // Timer not started yet
+        if (!PhotonNetwork.CurrentRoom.CustomProperties.TryGetValue("StartTime", out object value))
         {
-            EndMatch();
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.timerText.text = " WAITING...";
+            }
+
+            return;
+        }
+
+        matchStarted = true;
+
+        startTime = (double)value;
+
+        float timePassed = (float)(PhotonNetwork.Time - startTime);
+        float timeLeft = matchTime - timePassed;
+
+        if (timeLeft <= 0f)
+        {
+            timeLeft = 0f;
+
+            if (PhotonNetwork.IsMasterClient && !matchEnded)
+            {
+                EndMatch();
+            }
+        }
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.UpdateTimer(timeLeft);
         }
     }
 
-    if (UIManager.Instance != null)
+    public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        UIManager.Instance.UpdateTimer(timeLeft);
+        // Only host can start match
+        if (!PhotonNetwork.IsMasterClient) return;
+
+        // Already started
+        if (matchStarted) return;
+
+        // Start only when 2 or more players are inside
+        if (PhotonNetwork.CurrentRoom.PlayerCount >= 2)
+        {
+            Hashtable hash = new Hashtable();
+            hash["StartTime"] = PhotonNetwork.Time;
+
+            PhotonNetwork.CurrentRoom.SetCustomProperties(hash);
+
+            matchStarted = true;
+
+            Debug.Log("Match Started!");
+        }
     }
-}
 
     void EndMatch()
     {
         matchEnded = true;
 
-        // Find winner
         Player winner = PhotonNetwork.PlayerList
             .OrderByDescending(p => p.GetScore())
             .FirstOrDefault();
@@ -81,7 +103,7 @@ public class MatchManager : MonoBehaviourPunCallbacks
 
         Time.timeScale = 0f;
 
-        UIManager.Instance.UpdateTimer(0f); // Force 00:00
+        UIManager.Instance.UpdateTimer(0f);
         UIManager.Instance.ShowEndScreen(winnerName);
     }
 }
